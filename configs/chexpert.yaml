@@ -1,0 +1,48 @@
+# ConformalCXR — CheXpert Configuration
+
+# ── Data ──
+chexpert_root:   "data/CheXpert-v1.0-small"
+nihcxr_root:     "data/ChestX-ray14"
+image_size:      224
+num_workers:     4
+
+# ── 14 CheXpert pathology classes ──
+classes:
+  - "No Finding"
+  - "Enlarged Cardiomediastinum"
+  - "Cardiomegaly"
+  - "Lung Opacity"
+  - "Lung Lesion"
+  - "Edema"
+  - "Consolidation"
+  - "Pneumonia"
+  - "Atelectasis"
+  - "Pneumothorax"
+  - "Pleural Effusion"
+  - "Pleural Other"
+  - "Fracture"
+  - "Support Devices"
+
+# ── Model ──
+backbone:        "chexagent"       # "chexagent" or "biovil_t" or "resnet50"
+freeze_backbone: true
+probe_hidden:    512               # linear probe hidden dim (0 = direct linear)
+
+# ── Training (linear probe) ──
+epochs:          30
+batch_size:      64
+lr:              1.0e-3
+weight_decay:    1.0e-4
+pos_weight:      5.0               # BCEWithLogitsLoss positive class weight
+
+# ── Conformal calibration ──
+alpha:           0.10              # target miscoverage rate (1-alpha = 90% coverage)
+calib_frac:      0.20              # fraction of train set used as calibration
+raps_lambda:     0.01              # RAPS regularization strength
+raps_k_reg:      5                 # RAPS regularization start rank
+method:          "raps"            # "naive" | "aps" | "raps" | "raps_cc"
+
+# ── Output ──
+output_dir:      "outputs/run_001"
+cache_features:  true              # cache backbone features to disk
+features_dir:    "features_cache"
